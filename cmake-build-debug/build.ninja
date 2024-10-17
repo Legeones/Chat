@@ -55,8 +55,14 @@ build CMakeFiles/Chat.dir/main.c.obj: C_COMPILER__Chat_unscanned_Debug C$:/Users
   OBJECT_DIR = CMakeFiles\Chat.dir
   OBJECT_FILE_DIR = CMakeFiles\Chat.dir
 
-build CMakeFiles/Chat.dir/ChatObject.c.obj: C_COMPILER__Chat_unscanned_Debug C$:/Users/berna/CLionProjects/Chat/ChatObject.c || cmake_object_order_depends_target_Chat
-  DEP_FILE = CMakeFiles\Chat.dir\ChatObject.c.obj.d
+build CMakeFiles/Chat.dir/Client.c.obj: C_COMPILER__Chat_unscanned_Debug C$:/Users/berna/CLionProjects/Chat/Client.c || cmake_object_order_depends_target_Chat
+  DEP_FILE = CMakeFiles\Chat.dir\Client.c.obj.d
+  FLAGS = -g -std=gnu11 -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles\Chat.dir
+  OBJECT_FILE_DIR = CMakeFiles\Chat.dir
+
+build CMakeFiles/Chat.dir/Server.c.obj: C_COMPILER__Chat_unscanned_Debug C$:/Users/berna/CLionProjects/Chat/Server.c || cmake_object_order_depends_target_Chat
+  DEP_FILE = CMakeFiles\Chat.dir\Server.c.obj.d
   FLAGS = -g -std=gnu11 -fdiagnostics-color=always
   OBJECT_DIR = CMakeFiles\Chat.dir
   OBJECT_FILE_DIR = CMakeFiles\Chat.dir
@@ -69,7 +75,7 @@ build CMakeFiles/Chat.dir/ChatObject.c.obj: C_COMPILER__Chat_unscanned_Debug C$:
 #############################################
 # Link the executable Chat.exe
 
-build Chat.exe: C_EXECUTABLE_LINKER__Chat_Debug CMakeFiles/Chat.dir/main.c.obj CMakeFiles/Chat.dir/ChatObject.c.obj
+build Chat.exe: C_EXECUTABLE_LINKER__Chat_Debug CMakeFiles/Chat.dir/main.c.obj CMakeFiles/Chat.dir/Client.c.obj CMakeFiles/Chat.dir/Server.c.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\Chat.dir
