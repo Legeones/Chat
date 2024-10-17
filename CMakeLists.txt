@@ -4,4 +4,7 @@ project(Chat C)
 set(CMAKE_C_STANDARD 11)
 
 add_executable(Chat main.c
-        ChatObject.c)
+        ChatObject.h
+        Client.c
+        Server.c
+)
