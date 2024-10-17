@@ -1,0 +1,3 @@
+C:/Users/berna/CLionProjects/Chat/cmake-build-debug/CMakeFiles/Chat.dir
+C:/Users/berna/CLionProjects/Chat/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/berna/CLionProjects/Chat/cmake-build-debug/CMakeFiles/rebuild_cache.dir
