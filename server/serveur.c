@@ -24,6 +24,7 @@ typedef struct {
 // Structure pour stocker les informations des clients
 typedef struct {
     int socket;
+    char pseudo[50];  // Nouveau champ pour le pseudo du client
     struct sockaddr_in address;
     pthread_t thread_id;
 } client_t;
@@ -35,8 +36,8 @@ pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
 // Pointeur vers la mémoire partagée
 shared_memory_t *shared_mem = NULL;
 
-// Fonction pour diffuser un message à tous les clients
-void broadcast_message(const char *message) {
+// Fonction pour diffuser un message à tous les clients sauf l'émetteur
+void broadcast_message(const char *message, int sender_socket) {
     pthread_mutex_lock(&shared_mem->mutex);
 
     // Ajouter le message dans la mémoire partagée
@@ -53,10 +54,10 @@ void broadcast_message(const char *message) {
 
     pthread_mutex_unlock(&shared_mem->mutex);
 
-    // Envoyer le message à tous les clients
+    // Envoyer le message à tous les clients sauf l'émetteur
     pthread_mutex_lock(&clients_mutex);
     for (int i = 0; i < MAX_CLIENTS; ++i) {
-        if (clients[i]) {
+        if (clients[i] && clients[i]->socket != sender_socket) {
             send(clients[i]->socket, message, strlen(message), 0);
         }
     }
@@ -67,6 +68,15 @@ void broadcast_message(const char *message) {
 void *handle_client(void *arg) {
     char buffer[BUFFER_SIZE];
     client_t *cli = (client_t *)arg;
+
+    // Recevoir le pseudo du client lors de la connexion
+    if (recv(cli->socket, cli->pseudo, 50, 0) <= 0) {
+        printf("Erreur lors de la réception du pseudo.\n");
+        close(cli->socket);
+        free(cli);
+        pthread_exit(NULL);
+    }
+    printf("Client %s connecté.\n", cli->pseudo);
 
     // Envoyer l'historique des messages au client nouvellement connecté
     pthread_mutex_lock(&shared_mem->mutex);
@@ -80,10 +90,15 @@ void *handle_client(void *arg) {
         int receive = recv(cli->socket, buffer, BUFFER_SIZE, 0);
         if (receive > 0) {
             buffer[receive] = '\0';
-            printf("Client %d: %s\n", cli->socket, buffer);
-            broadcast_message(buffer);  // Diffuser à tous les clients
+
+            // Ajouter le pseudo de l'émetteur au message
+            char message_with_pseudo[BUFFER_SIZE + 50];
+            snprintf(message_with_pseudo, sizeof(message_with_pseudo), "%s: %s", cli->pseudo, buffer);
+
+            printf("%s\n", message_with_pseudo);  // Afficher sur le serveur
+            broadcast_message(message_with_pseudo, cli->socket);  // Diffuser à tous sauf à l'émetteur
         } else if (receive == 0 || strcmp(buffer, "exit") == 0) {
-            printf("Client %d disconnected\n", cli->socket);
+            printf("Client %s déconnecté.\n", cli->pseudo);
             close(cli->socket);
             break;
         }

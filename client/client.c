@@ -59,6 +59,13 @@ int main(int argc, char *argv[]) {
 
     printf("Connecté au serveur.\n");
 
+    // Envoyer le pseudo du client au serveur
+    char pseudo[50];
+    printf("Entrez votre pseudo : ");
+    fgets(pseudo, 50, stdin);
+    pseudo[strcspn(pseudo, "\n")] = '\0';  // Enlever le saut de ligne
+    send(sockfd, pseudo, strlen(pseudo), 0);
+
     // Créer un thread pour recevoir les messages
     pthread_t recv_thread;
     pthread_create(&recv_thread, NULL, receive_messages, &sockfd);
@@ -67,6 +74,7 @@ int main(int argc, char *argv[]) {
     char message[BUFFER_SIZE];
     while (1) {
         fgets(message, BUFFER_SIZE, stdin);
+        message[strcspn(message, "\n")] = '\0';  // Retirer le saut de ligne en trop
         if (strncmp(message, "exit", 4) == 0) {
             break;
         }
