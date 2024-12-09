@@ -61,6 +61,7 @@ void broadcast_message(const char *message, int sender_socket) {
             send(clients[i]->socket, message, strlen(message), 0);
         }
     }
+    // Libérer le mutex
     pthread_mutex_unlock(&clients_mutex);
 }
 
@@ -121,6 +122,7 @@ void *handle_client(void *arg) {
 // Fonction pour démarrer le serveur
 int start_server(int port) {
     int server_fd, new_socket;
+    // Variables pour les adresses du serveur et du client
     struct sockaddr_in server_addr, client_addr;
     socklen_t addr_len = sizeof(client_addr);
 
@@ -133,7 +135,9 @@ int start_server(int port) {
 
     // Initialiser l'adresse du serveur
     server_addr.sin_family = AF_INET;
+    // Accepter les connexions de n'importe quelle adresse IP
     server_addr.sin_addr.s_addr = INADDR_ANY;
+    // Convertir le port en ordre réseau
     server_addr.sin_port = htons(port);
 
     // Lier la socket à l'adresse
@@ -173,6 +177,7 @@ int start_server(int port) {
         cli->address = client_addr;
 
         pthread_mutex_lock(&clients_mutex);
+        //Trouve un emplacement vide dans le tableau des clients pour stocker les informations du client
         for (int i = 0; i < MAX_CLIENTS; ++i) {
             if (clients[i] == NULL) {
                 clients[i] = cli;

@@ -14,6 +14,7 @@ void *receive_messages(void *socket_fd) {
     int sockfd = *((int *)socket_fd);
     char buffer[BUFFER_SIZE];
 
+    // Boucle pour recevoir les messages
     while (1) {
         int receive = recv(sockfd, buffer, BUFFER_SIZE, 0);
         if (receive > 0) {
@@ -28,6 +29,7 @@ void *receive_messages(void *socket_fd) {
 }
 
 int main(int argc, char *argv[]) {
+    // Vérifier les arguments
     if (argc != 3) {
         fprintf(stderr, "Usage: %s <adresse_ip> <port>\n", argv[0]);
         return EXIT_FAILURE;
