@@ -17,10 +17,11 @@ void *receive_messages(void *socket_fd) {
     // Boucle pour recevoir les messages
     while (1) {
         int receive = recv(sockfd, buffer, BUFFER_SIZE, 0);
+        // Si le message est reçu
         if (receive > 0) {
             buffer[receive] = '\0';
             printf("%s\n", buffer);
-        } else if (receive == 0) {
+        } else if (receive == 0) { // Sinon si le serveur est déconnecté
             printf("Serveur déconnecté.\n");
             close(sockfd);
             exit(0);
@@ -29,7 +30,7 @@ void *receive_messages(void *socket_fd) {
 }
 
 int main(int argc, char *argv[]) {
-    // Vérifier les arguments
+    // Vérifie les arguments
     if (argc != 3) {
         fprintf(stderr, "Usage: %s <adresse_ip> <port>\n", argv[0]);
         return EXIT_FAILURE;
@@ -41,7 +42,7 @@ int main(int argc, char *argv[]) {
     int sockfd;
     struct sockaddr_in server_addr;
 
-    // Créer la socket
+    // Crée la socket
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0) {
         perror("Erreur lors de la création de la socket");
@@ -61,14 +62,14 @@ int main(int argc, char *argv[]) {
 
     printf("Connecté au serveur.\n");
 
-    // Envoyer le pseudo du client au serveur
+    // Envoye le pseudo du client au serveur
     char pseudo[50];
     printf("Entrez votre pseudo : ");
     fgets(pseudo, 50, stdin);
     pseudo[strcspn(pseudo, "\n")] = '\0';  // Enlever le saut de ligne
     send(sockfd, pseudo, strlen(pseudo), 0);
 
-    // Créer un thread pour recevoir les messages
+    // Crée un thread pour recevoir les messages
     pthread_t recv_thread;
     pthread_create(&recv_thread, NULL, receive_messages, &sockfd);
 
@@ -83,7 +84,7 @@ int main(int argc, char *argv[]) {
         send(sockfd, message, strlen(message), 0);
     }
 
-    // Fermer la connexion
+    // Ferme la connexion
     close(sockfd);
 
     return 0;

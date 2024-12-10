@@ -40,7 +40,7 @@ shared_memory_t *shared_mem = NULL;
 void broadcast_message(const char *message, int sender_socket) {
     pthread_mutex_lock(&shared_mem->mutex);
 
-    // Ajouter le message dans la mémoire partagée
+    // Ajoute le message dans la mémoire partagée
     if (shared_mem->message_count < MAX_MESSAGES) {
         strcpy(shared_mem->messages[shared_mem->message_count], message);
         shared_mem->message_count++;
@@ -54,14 +54,14 @@ void broadcast_message(const char *message, int sender_socket) {
 
     pthread_mutex_unlock(&shared_mem->mutex);
 
-    // Envoyer le message à tous les clients sauf l'émetteur
+    // Envoye le message à tous les clients sauf l'émetteur
     pthread_mutex_lock(&clients_mutex);
     for (int i = 0; i < MAX_CLIENTS; ++i) {
         if (clients[i] && clients[i]->socket != sender_socket) {
             send(clients[i]->socket, message, strlen(message), 0);
         }
     }
-    // Libérer le mutex
+    // Libére le mutex
     pthread_mutex_unlock(&clients_mutex);
 }
 
@@ -79,7 +79,7 @@ void *handle_client(void *arg) {
     }
     printf("Client %s connecté.\n", cli->pseudo);
 
-    // Envoyer l'historique des messages au client nouvellement connecté
+    // Envoye l'historique des messages au client nouvellement connecté
     pthread_mutex_lock(&shared_mem->mutex);
     for (int i = 0; i < shared_mem->message_count; i++) {
         send(cli->socket, shared_mem->messages[i], strlen(shared_mem->messages[i]), 0);
@@ -92,12 +92,12 @@ void *handle_client(void *arg) {
         if (receive > 0) {
             buffer[receive] = '\0';
 
-            // Ajouter le pseudo de l'émetteur au message
+            // Ajoute le pseudo de l'émetteur au message
             char message_with_pseudo[BUFFER_SIZE + 50];
             snprintf(message_with_pseudo, sizeof(message_with_pseudo), "%s: %s", cli->pseudo, buffer);
 
-            printf("%s\n", message_with_pseudo);  // Afficher sur le serveur
-            broadcast_message(message_with_pseudo, cli->socket);  // Diffuser à tous sauf à l'émetteur
+            printf("%s\n", message_with_pseudo);  // Affiche sur le serveur
+            broadcast_message(message_with_pseudo, cli->socket);  // Diffuse à tous sauf à l'émetteur
         } else if (receive == 0 || strcmp(buffer, "exit") == 0) {
             printf("Client %s déconnecté.\n", cli->pseudo);
             close(cli->socket);
@@ -105,7 +105,7 @@ void *handle_client(void *arg) {
         }
     }
 
-    // Libérer la mémoire et le thread
+    // Libére la mémoire et le thread
     pthread_mutex_lock(&clients_mutex);
     for (int i = 0; i < MAX_CLIENTS; ++i) {
         if (clients[i] == cli) {
@@ -126,27 +126,27 @@ int start_server(int port) {
     struct sockaddr_in server_addr, client_addr;
     socklen_t addr_len = sizeof(client_addr);
 
-    // Créer la socket du serveur
+    // Crée la socket du serveur
     server_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (server_fd == -1) {
         perror("Erreur lors de la création de la socket");
         exit(EXIT_FAILURE);
     }
 
-    // Initialiser l'adresse du serveur
+    // Initialise l'adresse du serveur
     server_addr.sin_family = AF_INET;
-    // Accepter les connexions de n'importe quelle adresse IP
+    // Accepte les connexions de n'importe quelle adresse IP
     server_addr.sin_addr.s_addr = INADDR_ANY;
-    // Convertir le port en ordre réseau
+    // Converti le port en ordre réseau
     server_addr.sin_port = htons(port);
 
-    // Lier la socket à l'adresse
+    // Lie la socket à l'adresse
     if (bind(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
         perror("Erreur lors du bind");
         exit(EXIT_FAILURE);
     }
 
-    // Ecouter les connexions
+    // Ecoute les connexions
     if (listen(server_fd, 10) < 0) {
         perror("Erreur lors de l'écoute");
         exit(EXIT_FAILURE);
@@ -154,12 +154,12 @@ int start_server(int port) {
 
     printf("Serveur démarré sur le port %d\n", port);
 
-    // Initialiser la mémoire partagée
-    key_t key = ftok("shmfile", 65); // Générer une clé unique
-    int shmid = shmget(key, sizeof(shared_memory_t), 0666 | IPC_CREAT); // Créer la mémoire partagée
-    shared_mem = (shared_memory_t *)shmat(shmid, NULL, 0); // Attacher la mémoire partagée
+    // Initialise la mémoire partagée
+    key_t key = ftok("shmfile", 65); // Génére une clé unique
+    int shmid = shmget(key, sizeof(shared_memory_t), 0666 | IPC_CREAT); // Crée la mémoire partagée
+    shared_mem = (shared_memory_t *)shmat(shmid, NULL, 0); // Attache la mémoire partagée
 
-    // Initialiser les données dans la mémoire partagée
+    // Initialise les données dans la mémoire partagée
     shared_mem->message_count = 0;
     pthread_mutex_init(&shared_mem->mutex, NULL);
 
@@ -171,7 +171,7 @@ int start_server(int port) {
             continue;
         }
 
-        // Créer une structure client et un thread pour chaque client
+        // Crée une structure client et un thread pour chaque client
         client_t *cli = (client_t *)malloc(sizeof(client_t));
         cli->socket = new_socket;
         cli->address = client_addr;
@@ -190,7 +190,7 @@ int start_server(int port) {
         printf("Nouveau client connecté : %d\n", new_socket);
     }
 
-    // Détacher et supprimer la mémoire partagée
+    // Détache et supprime la mémoire partagée
     shmdt(shared_mem);
     shmctl(shmid, IPC_RMID, NULL);
 
