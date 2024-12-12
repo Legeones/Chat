@@ -83,6 +83,7 @@ void *handle_client(void *arg) {
     pthread_mutex_lock(&shared_mem->mutex);
     for (int i = 0; i < shared_mem->message_count; i++) {
         send(cli->socket, shared_mem->messages[i], strlen(shared_mem->messages[i]), 0);
+        send(cli->socket, "\n", 1, 0);
     }
     pthread_mutex_unlock(&shared_mem->mutex);
 
