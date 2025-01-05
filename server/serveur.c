@@ -187,8 +187,6 @@ int start_server(int port) {
             }
         }
         pthread_mutex_unlock(&clients_mutex);
-
-        printf("Nouveau client connecté : %d\n", new_socket);
     }
 
     // Détache et supprime la mémoire partagée
